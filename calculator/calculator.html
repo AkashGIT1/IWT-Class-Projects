@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Talking Calculator</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(to right, #ff8400, #fff874);
+            font-family: Arial, sans-serif;
+        }
+        .calculator {
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        .display {
+            width: 100%;
+            height: 60px;
+            font-size: 2rem;
+            text-align: right;
+            margin-bottom: 15px;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            background: #f1f1f1;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            justify-content: center;
+            width: 100%;
+        }
+        button {
+            width: 70px;
+            height: 70px;
+            font-size: 1.5rem;
+            border: none;
+            background: linear-gradient(135deg, #29fdef, #cefc84);
+            color: #333;
+            cursor: pointer;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: 0.3s ease-in-out;
+        }
+        button:hover {
+            background: linear-gradient(135deg, #ff758c, #ff7eb3);
+            transform: scale(1.05);
+        }
+        .operator {
+            background: linear-gradient(135deg, #a18cd1, #fbc2eb);
+            color: white;
+        }
+        .operator:hover {
+            background: linear-gradient(135deg, #8e44ad, #f39c12);
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <input type="text" class="display" id="display" disabled>
+        <div class="buttons">
+            <button class="operator" onclick="clearDisplay()">C</button>
+            <button class="operator" onclick="appendToDisplay('/')">/</button>
+            <button class="operator" onclick="appendToDisplay('*')">*</button>
+            <button class="operator" onclick="appendToDisplay('-')">-</button>
+            <button class="operator" onclick="appendToDisplay('%')">%</button>
+            <button class="operator" onclick="calculateSqrt()">√</button>
+            <button class="operator" onclick="appendToDisplay('+')">+</button>
+            <button class="operator"  onclick="appendToDisplay('**'),speak('to the power')">^</button>
+            <button onclick="appendToDisplay('1')">1</button>
+            <button onclick="appendToDisplay('2')">2</button>
+            <button onclick="appendToDisplay('3')">3</button>
+            <button onclick="appendToDisplay('0')">0</button>
+            <button onclick="appendToDisplay('4')">4</button>
+            <button onclick="appendToDisplay('5')">5</button>
+            <button onclick="appendToDisplay('6')">6</button>
+            <button class="operator" onclick="appendToDisplay('.')">.</button>
+            <button onclick="appendToDisplay('7')">7</button>
+            <button onclick="appendToDisplay('8')">8</button>
+            <button onclick="appendToDisplay('9')">9</button>
+            <button class="operator" onclick="calculateResult()">=</button>
+            <button class="operator" onclick="convertToBinary()">Bin</button>
+            <button class="operator" onclick="convertToOctal()">Oct</button>
+            <button class="operator" onclick="convertToHex()">Hex</button>
+            <button class="operator" onclick="calculateLuck()">Luck</button>
+        </div>
+    </div>
+    <script>
+        let r=0;
+        function speak(text) {
+            let speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'en-US';
+            speech.rate=2;
+            window.speechSynthesis.speak(speech);
+        }
+
+        function appendToDisplay(value) {
+            if(r==1 && !isNaN(value)){
+                clearDisplay2();
+                r=0;
+            }
+            
+            document.getElementById('display').value += value;
+            speak(value);
+        }
+
+        function clearDisplay() {
+            document.getElementById('display').value = '';
+            speak("Cleared");
+        }
+        function clearDisplay2() {
+            document.getElementById('display').value = '';
+        }
+        function calculateResult() {
+            try {
+                let result = eval(document.getElementById('display').value);
+                document.getElementById('display').value = result;
+                speak("Is equal to" + result);
+                r=1;
+            } catch {
+                document.getElementById('display').value = 'Error';
+                speak("Error");
+            }
+        }
+
+        function calculateSqrt() {
+            let value = parseFloat(document.getElementById('display').value);
+            if (isNaN(value) || value < 0) {
+                document.getElementById('display').value = 'Error';
+                speak("Error");
+            } else {
+                let result = Math.sqrt(value);
+                document.getElementById('display').value = result;
+                speak("Square root is " + result);
+            }
+        }
+
+        function convertToBinary() {
+            let decimal = parseInt(document.getElementById('display').value, 10);
+            if (!isNaN(decimal)) {
+                let result = decimal.toString(2);
+                document.getElementById('display').value = result;
+                speak("Binary is " + result);
+            } else {
+                document.getElementById('display').value = 'Error';
+                speak("Error");
+            }
+        }
+
+        function convertToOctal() {
+            let decimal = parseInt(document.getElementById('display').value, 10);
+            if (!isNaN(decimal)) {
+                let result = decimal.toString(8);
+                document.getElementById('display').value = result;
+                speak("Octal is " + result);
+            } else {
+                document.getElementById('display').value = 'Error';
+                speak("Error");
+            }
+        }
+
+        function convertToHex() {
+            let decimal = parseInt(document.getElementById('display').value, 10);
+            if (!isNaN(decimal)) {
+                let result = decimal.toString(16).toUpperCase();
+                document.getElementById('display').value = result;
+                speak("Hexadecimal is " + result);
+            } else {
+                document.getElementById('display').value = 'Error';
+                speak("Error");
+            }
+        }
+
+        function calculateLuck() {
+            let birthdate = prompt("Enter your birthdate (YYYYMMDD):");
+            if (birthdate && !isNaN(birthdate)) {
+                let sum = birthdate.split('').reduce((acc, num) => acc + parseInt(num), 0);
+                while (sum >= 10) {
+                    sum = sum.toString().split('').reduce((acc, num) => acc + parseInt(num), 0);
+                }
+                let luckScore = sum % 10;
+                document.getElementById('display').value = `Luck Score: ${luckScore}`;
+                speak("Your luck score is " + luckScore);
+            } else {
+                document.getElementById('display').value = 'Invalid Input';
+                speak("Invalid Input");
+            }
+        }
+    </script>
+</body>
+</html>
